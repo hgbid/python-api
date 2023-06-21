@@ -8,7 +8,7 @@ from flask import Flask, request, jsonify, make_response
 def get_output(script, inp):
     try:
         with io.StringIO() as buf, redirect_stdout(buf):
-            inpt = io.StringIO(inp)
+            inpt = io.StringIO(str(inp))
             sys.stdin = inpt
             code = compile(script, '<string>', 'exec')
             d = dict(locals(), **globals())
