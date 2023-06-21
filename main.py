@@ -32,8 +32,6 @@ def runCode():
         input_data = request.json['input']
 
         print("run code called")
-        print(script)
-        print(input_data)
         
         try:
             output = get_output(script, input_data)
@@ -44,7 +42,8 @@ def runCode():
 
         print(output)
         print("run code return output")
-        return jsonify({"output": output, "massage":massage})
+        response = jsonify({"output": output, "massage":massage})
+        return corsify_actual_response(response)
 
 def build_cors_preflight_response():
     response = make_response()
