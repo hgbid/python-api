@@ -25,6 +25,7 @@ def runCode():
                 massage=str(e)
 
         output = output_buffer.getvalue()
+        print(output)
         print("run code return output")
         response = jsonify({"output": output, "massage":massage})
         return corsify_actual_response(response)
