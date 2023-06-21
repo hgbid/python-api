@@ -31,7 +31,7 @@ app = Flask(__name__)
 def index():
     return 'Hello, World!'
 
-@app.route('/runCode')
+@app.route('/runCode', methods=['POST'])
 def runCode():
     script = request.json['script']
     input_data = request.json['input']
