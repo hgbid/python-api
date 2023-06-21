@@ -27,6 +27,10 @@ def get_output(script, inp):
 
 app = Flask(__name__)
 
+@app.route('/')
+def index():
+    return 'Hello, World!'
+
 @app.route('/runCode', methods=['POST', 'OPTIONS'])
 def runCode():
     if request.method == "OPTIONS":
