@@ -3,6 +3,7 @@ import os
 import sys
 from contextlib import redirect_stdout
 from flask import Flask, request, jsonify, make_response
+import traceback
 
 def get_output(script, inp):
     try:
@@ -13,8 +14,8 @@ def get_output(script, inp):
             d = dict(locals(), **globals())
             exec(code, d, d)
             output = buf.getvalue()
-    except Exception as e:
-        output = str(e)
+    except Exception as error:
+        output = ''.join(traceback.format_exception(None, error, error.__traceback__))
     finally:
         sys.stdout = sys.__stdout__
         sys.stdin = sys.__stdin__
