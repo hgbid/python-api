@@ -13,7 +13,8 @@ def runCode():
         script = request.json['script']
         input_data = request.json['input']
         print("run code called")
-
+        print(script)
+        print(input_data)
         output_buffer = io.StringIO()
         with redirect_stdout(output_buffer):
             try:
