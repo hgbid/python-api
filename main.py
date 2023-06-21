@@ -1,7 +1,25 @@
 import io
 import os
+import sys
 from contextlib import redirect_stdout
 from flask import Flask, request, jsonify, make_response
+
+def get_output(script, inp):
+    try:
+        with io.StringIO() as buf, redirect_stdout(buf):
+            inpt = io.StringIO(inp)
+            sys.stdin = inpt
+            code = compile(script, '<string>', 'exec')
+            d = dict(locals(), **globals())
+            exec(code, d, d)
+            output = buf.getvalue()
+    except Exception as e:
+        output = str(e)
+    finally:
+        sys.stdout = sys.__stdout__
+        sys.stdin = sys.__stdin__
+    return output
+
 
 app = Flask(__name__)
 
@@ -12,23 +30,21 @@ def runCode():
     elif request.method == "POST":
         script = request.json['script']
         input_data = request.json['input']
+
         print("run code called")
         print(script)
         print(input_data)
-        output_buffer = io.StringIO()
-        with redirect_stdout(output_buffer):
-            try:
-                exec(script, {"input": lambda: input_data})
-                massage = "Script executed successfully"
-            except Exception as e:
-                print(str(e))
-                massage=str(e)
+        
+        try:
+            output = get_output(script, input_data)
+            massage = "Script executed successfully"
+        except Exception as e:
+            print(str(e))
+            massage=str(e)
 
-        output = output_buffer.getvalue()
         print(output)
         print("run code return output")
-        response = jsonify({"output": output, "massage":massage})
-        return corsify_actual_response(response)
+        return jsonify({"output": output, "massage":massage})
 
 def build_cors_preflight_response():
     response = make_response()
