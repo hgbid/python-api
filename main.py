@@ -1,4 +1,5 @@
 import io
+import os
 from contextlib import redirect_stdout
 from flask import Flask, request, jsonify, make_response
 
@@ -35,3 +36,7 @@ def build_cors_preflight_response():
 def corsify_actual_response(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
