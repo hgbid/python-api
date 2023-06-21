@@ -1,8 +1,12 @@
 import io
 import os
 import sys
+import json
 from contextlib import redirect_stdout
 from flask import Flask, request, jsonify, make_response
+
+def serialize(data):
+    return json.dumps(data).replace("null", "None")
 
 def get_output(script, inp):
     try:
@@ -32,7 +36,7 @@ def runCode():
         input_data = request.json['input']
 
         print("run code called")
-        
+        print(input_data)
         try:
             output = get_output(script, input_data)
             massage = "Script executed successfully"
