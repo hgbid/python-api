@@ -33,9 +33,7 @@ def runCode():
         input_data = request.json['input']
 
         print("run code called")
-        print(script)
-        print(input_data)
-        
+        print(input_data)    
         try:
             output = get_output(script, input_data)
             massage = "Script executed successfully"
