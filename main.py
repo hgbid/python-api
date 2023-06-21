@@ -18,12 +18,14 @@ def runCode():
         with redirect_stdout(output_buffer):
             try:
                 exec(script, {"input": lambda: input_data})
+                massage = "Script executed successfully"
             except Exception as e:
                 print(str(e))
+                massage=str(e)
 
         output = output_buffer.getvalue()
         print("run code return output")
-        response = jsonify({"output": output})
+        response = jsonify({"output": output, "massage":massage})
         return corsify_actual_response(response)
 
 def build_cors_preflight_response():
