@@ -4,7 +4,6 @@ import sys
 from contextlib import redirect_stdout
 from flask import Flask, request, jsonify, make_response
 
-
 def get_output(script, inp):
     try:
         with io.StringIO() as buf, redirect_stdout(buf):
@@ -14,8 +13,8 @@ def get_output(script, inp):
             d = dict(locals(), **globals())
             exec(code, d, d)
             output = buf.getvalue()
-    except Exception as error:
-        output = str(error)
+    except Exception as e:
+        output = str(e)
     finally:
         sys.stdout = sys.__stdout__
         sys.stdin = sys.__stdin__
@@ -24,29 +23,35 @@ def get_output(script, inp):
 
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return 'Hello, World!'
-
-@app.route('/runCode', methods=['POST'])
+@app.route('/runCode', methods=['POST', 'OPTIONS'])
 def runCode():
-    script = request.json['script']
-    input_data = request.json['input']
+    if request.method == "OPTIONS":
+        return build_cors_preflight_response()
+    elif request.method == "POST":
+        script = request.json['script']
+        input_data = request.json['input']
 
-    print("run code called")
-    print(input_data)
-    try:
-        output = get_output(script, input_data)
-        massage = "Script executed successfully"
-    except Exception as error:
-        print(str(error))
-        massage=str(error)
+        print("run code called")
+        print(script)
+        print(input_data)
+        
+        try:
+            output = get_output(script, input_data)
+            massage = "Script executed successfully"
+        except Exception as e:
+            print(str(e))
+            massage=str(e)
 
-    print(output)
-    print("run code return output")
-    response = jsonify({"output": output, "massage":massage})
-    return corsify_actual_response(response)
+        print(output)
+        print("run code return output")
+        return jsonify({"output": output, "massage":massage})
 
+def build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
 
 def corsify_actual_response(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -54,4 +59,4 @@ def corsify_actual_response(response):
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=port)
