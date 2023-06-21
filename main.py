@@ -2,9 +2,11 @@ import json
 from flask import Flask, request
 import io, os
 from contextlib import redirect_stdout
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 
 def serialize(data):
     return json.dumps(data).replace("null", "None")
